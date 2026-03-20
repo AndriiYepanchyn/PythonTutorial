@@ -1,0 +1,12 @@
+red
+orange
+yellow
+blue
+green
+violet
+light red
+light orange
+light yellow
+light blue
+light green
+light violet

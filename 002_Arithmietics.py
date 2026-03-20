@@ -1,0 +1,9 @@
+int_var1 = 9
+int_var2 = 4
+print(int_var1, "+", int_var2, "= ", int_var1 + int_var2)
+print(int_var1, "-", int_var2, "= ", int_var1 - int_var2)
+print(int_var1, "*", int_var2, "= ", int_var1 * int_var2) 
+print(int_var1, "**", int_var2, "= ", int_var1 ** int_var2) #equals Math.pow() in Java
+print(int_var1, "/", int_var2, "= ", int_var1 / int_var2) #Has different behavior in Python2 and Python3 see manual
+print(int_var1, "//", int_var2, "= ", int_var1 // int_var2)
+print(int_var1, "%", int_var2, "= ", int_var1 % int_var2)
