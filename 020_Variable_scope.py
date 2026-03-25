@@ -1,4 +1,9 @@
-# There are 4 types of scope from  narrower to wider:  local, enclosed, global, built-in
+# There are 4 types of scope from  narrower to wider: 
+#  local, 
+#  enclosed,
+#  global,
+#  built-in
+
 # Set equal names to the variabales with different scopes is a bad prictice, 
 # but it will works by the following rules
 from math import pi
@@ -7,7 +12,8 @@ from math import pi
 # but it will shadowed by every narrower variabe.
 
 
-# pi = 'global level variable' #Global scope visible everywhere inside class
+# Global scope visible everywhere inside class
+# pi = 'global level variable' 
 
 def outer_function():
     pi='enclosed variable' #Enclosed scope - visible evereywhere inside the outer function
