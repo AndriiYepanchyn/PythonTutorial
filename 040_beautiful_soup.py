@@ -15,8 +15,12 @@
 # | `.decompose()`                       | Видалити тег із DOM            | `tag.decompose()`                            |
 # | `.content`							 | Повертає вмість складного тегу |												 |
 # |										 | body, div etc				  |												 |
-# | `.next_sibling`						 | Повертає наступний тег того ж  |												 |
-# |										 | рангу						  |												 |
+# | `.next_sibling`						 | Повертає наступний (prev)      |								     			 |
+# |	`.previous_sibling`					 | тег того ж рангу				  |												 |
+# | `.find_next_sibling`				 |Повертає тег без урахування 	  |												 |
+# |										 |порожніх строк				  |												 |
+# | `.findChildren`						 | Повертає дітей цього тегу	  |												 |
+
 
 from bs4 import BeautifulSoup
 import requests
@@ -56,7 +60,7 @@ html_string = """
 			<li>HTML</li>
 			<li id="css-li">CSS</li>
 			<li class="green">JavaScript</li>
-			<li class="green">Python</li>
+			<li class="green" id="python-li">Python</li>
 		</ol>
 
 	</body>
@@ -116,13 +120,31 @@ parsed_html = BeautifulSoup(html_string, 'html.parser') #May be also be XML pars
 # print(type(html_elem_list))
 
 
-data = parsed_html.body.contents
+# data = parsed_html.body.contents
 # print(data)
 # print(data[7]) #data[1] equal parsed_html.body.contents[1]
+# print("-"*80)
+# print(parsed_html.body.contents)
+# # print(parsed_html.body.contents[7].contents[1])
+# print("-"*80)
+# print(parsed_html.body.contents[4].next_sibling)
+# print("-"*80)
+# print(parsed_html.body.contents[7].contents[0].next_sibling.next_sibling.next_sibling)
+# print("-"*80)
+# data = parsed_html.find(id = "css-li").parent.parent #1st parent return ol, 2nd body
+# print(data)
+# print("-"*80)
+# data = parsed_html.find(id = "css-li").find_next_sibling(id="python-li")
+# print(data)
 print("-"*80)
-print(parsed_html.body.contents)
-# print(parsed_html.body.contents[7].contents[1])
-print("-"*80)
-print(parsed_html.body.contents[4].next_sibling)
-print("-"*80)
-print(parsed_html.body.contents[7].contents[0].next_sibling.next_sibling.next_sibling)
+# data = parsed_html.body.findChildren()[2] #Deprecated replaced by find_all()
+# data = parsed_html.body.find_all()[2] 
+# print(data)
+
+# =========================================================================
+response = requests.get('http://quotes.toscrape.com/')
+data = BeautifulSoup(response.text, 'html.parser')
+quotes = data.find_all(itemprop = "text")
+print("quotes size = ", len(quotes))
+for i in quotes:
+	print(i.getText(), '\n')
