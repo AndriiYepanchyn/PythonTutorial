@@ -1,4 +1,4 @@
-import first_for_028 as go
+import resources.first_for_028 as go
 
 def func2():
     print('Func2 from second file')
