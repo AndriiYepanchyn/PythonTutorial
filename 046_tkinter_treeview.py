@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+# This class demonstrate work wit table (TreeView) How to create, fill, create structure, edit on double click, select edited areas
+
 class TreeviewEdit(ttk.Treeview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
