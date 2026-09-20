@@ -2,6 +2,40 @@ import tkinter as tk
 from tkinter import ttk
 
 # This class demonstrate work wit table (TreeView) How to create, fill, create structure, edit on double click, select edited areas
+# Для дерева до TreeView треба використовувати show="tree", show="headings" або show="tree headings".
+
+# Що означає show
+
+# Treeview має дві основні частини:
+
+# Tree column — спеціальна колонка #0, де знаходиться ієрархія дерева.
+# Headings — заголовки звичайних колонок, заданих через columns.
+
+# Тому:
+
+# show="tree" - покаже тільки дерево:
+
+# 📁 Project
+#  ├── 📁 src
+#  │    ├── Main.java
+#  │    └── Test.java
+#  └── pom.xml
+
+# show="headings" - покаже тільки табличну частину:
+
+# Name       Type       Size
+# Main.java  Java       15 KB
+# Test.java  Java       8 KB
+
+
+# show="tree headings" - покаже і дерево, і заголовки колонок:
+
+#              Name       Type       Size
+# 📁 Project
+#  ├─ 📁 src
+#  │   ├─ Main.java       Java       15 KB
+#  │   └─ Test.java       Java        8 KB
+#  └─ pom.xml             XML         2 KB
 
 class TreeviewEdit(ttk.Treeview):
     def __init__(self, master, **kwargs):
@@ -81,8 +115,55 @@ class TreeviewEdit(ttk.Treeview):
         event.widget.destroy()
 
 
+# Usefull methods
 
+# Отримати вибраний рядок
 
+# selected = tree.selection()
+# if selected:
+#     item_id = selected[0]
+#     values = tree.item(item_id, "values")
+
+# Видалити
+
+# tree.delete(item_id)
+
+# Очистити всю таблицю:
+
+# for item in tree.get_children():
+    # tree.delete(item)
+
+# Treeview listener'и
+
+# tree.bind(
+#     "<<TreeviewSelect>>",
+#     on_tree_select
+# )  
+# 
+
+# Подвійний клік:
+
+# tree.bind(
+#     "<Double-1>",
+#     on_double_click
+# )  
+
+# =====  Scrollbar  =====
+
+# scrollbar = ttk.Scrollbar(
+#     frame,
+#     orient="vertical",
+#     command=tree.yview
+# )
+
+# tree.configure(
+#     yscrollcommand=scrollbar.set
+# )
+
+# Розміщення:
+
+# tree.pack(side="left", fill="both", expand=True)
+# scrollbar.pack(side="right", fill="y")
 
 
 
@@ -93,14 +174,15 @@ def configure_window(root : tk.Tk):
 # ------  Methods configuring TreeView  -----
 def define_columns(parent):
     # Define columns
-    parent.heading('#0', text = 'Vehicle type', anchor='w')
+    parent.heading('#0', text = 'Vehicle type', anchor='w') # '#0' - Визнача рут колонку 
     parent.heading("vehicle_name", text = "Vehicle name")
     parent.heading("year", text = "Year")
     parent.heading("colour", text = "Colour")
 
-def define_rows(parent):
+def define_rows(parent :TreeviewEdit):
     # Define Rows
     # Sedan_row variable may be used as parent for the next rows
+    # This cause tree view of the table
     sedan_row = parent.insert(parent="",
                              index=tk.END,
                              text = "Sedan")
@@ -132,14 +214,6 @@ if __name__ == "__main__":
 
     define_columns(treeview_vehicles)
     define_rows(treeview_vehicles)
-
-
-
-
-    
-    
-    
-    
 
     treeview_vehicles.pack(fill= tk.BOTH, expand=True)
     root.mainloop()
