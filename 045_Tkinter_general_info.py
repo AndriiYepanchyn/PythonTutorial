@@ -1,7 +1,7 @@
 # Tkinter — загальна шпаргалка
 import time
 import tkinter as tk
-from tkinter import ttk
+from tkinter import PanedWindow, ttk
 from tkinter import font
 from tkinter import messagebox
 from tkinter import filedialog
@@ -9,7 +9,7 @@ from tkinter import filedialog
 
 
 # 1. ======  Базовий каркас програми  ======
-root = tk.Tk()  #Creates main window which will conain all other components
+root = u  #Creates main window which will conain all other components
 
 root.title("My Application")  #Set title of the window
 root.geometry("800x600")   # Set widht and height of the window
@@ -40,16 +40,34 @@ root.minsize(50, 50) #Set minimum size
 
 # Для сучасного GUI зазвичай краще використовувати ttk, особливо:
 
-# ttk.Button
-# ttk.Label
-# ttk.Entry
-# ttk.Combobox
-# ttk.Checkbutton
-# ttk.Radiobutton
-# ttk.Treeview
-# ttk.Notebook
-# ttk.Progressbar
-# ttk.Spinbox
+# | Widget        | Пакет | Для чого                          |
+# | ------------- | ----- | --------------------------------- |
+# | `Frame`       | `ttk` | контейнер                         |
+# | `Label`       | `ttk` | текст                             |
+# | `Button`      | `ttk` | дія                               |
+# | `Entry`       | `ttk` | однорядковий ввід                 |
+# | `Checkbutton` | `ttk` | on/off                            |
+# | `Radiobutton` | `ttk` | один вибір                        |
+# | `Combobox`    | `ttk` | dropdown                          |
+# | `Spinbox`     | `ttk` | числовий/циклічний вибір          |
+# | `Scale`       | `ttk` | slider                            |
+# | `Progressbar` | `ttk` | прогрес                           |
+# | `Scrollbar`   | `ttk` | прокрутка                         |
+# | `Separator`   | `ttk` | роздільник                        |
+# | `Sizegrip`    | `ttk` | елемент зміни розміру вікна       |
+# | `Treeview`    | `ttk` | дерево / таблиця                  |
+# | `Notebook`    | `ttk` | вкладки                           |
+# | `Panedwindow` | `ttk` | панелі з можливістю зміни розміру |
+
+# | Widget     | Пакет | Для чого                |
+# | ---------- | ----- | ----------------------- |
+# | `Text`     | `tk`  | багаторядковий текст    |
+# | `Listbox`  | `tk`  | список                  |
+# | `Canvas`   | `tk`  | власна графіка          |
+# | `Menu`     | `tk`  | меню                    |
+# | `Toplevel` | `tk`  | дочірнє/додаткове вікно |
+
+
 
 # Зазвичай GUI будується ієрархією:
 # root
@@ -61,6 +79,55 @@ root.minsize(50, 50) #Set minimum size
 #  └── frame
 #       ├── tree
 #       └── scrollbar
+
+# Якщо звести Tkinter до кількох концепцій, треба добре знати саме ці:
+# 1. Widget creation
+#        ↓
+# 2. Geometry management
+#        ├── pack
+#        ├── grid
+#        └── place
+#        ↓
+# 3. Widget configuration
+#        ├── configure()
+#        └── cget()
+#        ↓
+# 4. State
+#        ├── StringVar
+#        ├── IntVar
+#        ├── BooleanVar
+#        └── DoubleVar
+#        ↓
+# 5. Events
+#        ├── command
+#        ├── bind
+#        └── trace_add
+#        ↓
+# 6. Main event loop
+#        │
+#        └── mainloop()
+#        ↓
+# 7. Async GUI updates
+#        └── after()
+
+
+# Button
+#     └── command=function
+
+# Combobox
+#     └── bind("<<ComboboxSelected>>", function)
+
+# Entry + StringVar
+#     └── variable.trace_add("write", function)
+
+# Treeview
+#     └── bind("<<TreeviewSelect>>", function)
+
+# Keyboard
+#     └── bind("<Control-s>", function)
+
+# Mouse
+#     └── bind("<Button-1>", function)
 
 
 
@@ -778,6 +845,435 @@ context_menu.add_command(
     command=show_filtered_dialog
 )
 
+
+#  -----  Panned Window  -----
+
+
+# Так. PanedWindow — це контейнер, який ділить область на декілька панелей, між якими користувач може перетягувати роздільник (sash).
+# У Tkinter є дві реалізації:
+# tk.PanedWindow — старий/класичний Tk-віджет;
+
+# TK Paned Window
+
+# | Параметр       | Значення                             |
+# | -------------- | ------------------------------------ |
+# | `orient`       | `HORIZONTAL` / `VERTICAL`            |
+# | `sashwidth`    | ширина роздільника                   |
+# | `sashrelief`   | вигляд роздільника                   |
+# | `stretch`      | "always"-панель розтягується, "Never
+# |                | - зберігає розмір" при зміні розмірів вікна тощо
+# | `showhandle`   | показувати handle                    |
+# | `handlesize`   | розмір handle                        |
+# | `opaqueresize` | змінювати розмір одразу під час drag |
+# | `borderwidth`  | border                               |
+# | `relief`       | стиль border                         |
+# | `bg`           | background                           |
+
+
+tk_panned = PanedWindow(root, 
+                        orient=tk.HORIZONTAL,
+                        sashwidth=5,
+                        sashrelief=tk.RAISED,
+                        showhandle=True
+                        ) 
+
+tk_panned.place(x= 230, y=290, width=250, height=100)
+
+left = tk.Frame(tk_panned, bg="lightgray")
+left_label = ttk.Label(left, text="left pane 60%")
+left_label.pack()
+
+right =tk.Frame(tk_panned, bg="white")
+right_label = ttk.Label(right, text="right pane 40%")
+right_label.pack()
+
+
+def set_paned_position():
+    width = tk_panned.winfo_width()
+    tk_panned.sash_place(0, int(width * 0.6), 0) #Установка позицію саш
+
+# Отримати позицію Саш
+# tk_panned.sash_coord(0) 
+
+
+root.after(100, set_paned_position)
+
+tk_panned.add(left, minsize = 50)
+tk_panned.add(right)
+
+# Add pane
+# tk_panel.add(third_frame) #or widget
+
+# Remove pane - віджет видаляється з панелі але об'єкт залишається
+# tk_panned.forget(third_frame)
+
+
+# TTK paned window
+
+import tkinter as tk
+from tkinter import ttk
+
+pane_label = ttk.LabelFrame(
+    blue_frame,
+    text="ttk.panedWindow"
+)
+pane_label.place(x=220, y = 350, width=250, height=100)
+
+style = ttk.Style()
+
+style.configure(
+    "Custom.TPanedwindow",
+    background="red"
+)
+
+paned = ttk.Panedwindow(
+    pane_label,
+    orient="horizontal",
+    style="Custom.TPanedwindow"
+)
+paned.pack(fill="both", expand="True", padx=3, pady=3)
+
+left = tk.Frame(paned, bg="white")
+right = tk.Frame(paned, bg="darkgray")
+
+paned.add(left, weight=1)
+paned.add(right, weight=3)
+
+left_lab = ttk.Label(
+    left,
+    text="Left panel"
+)
+left_lab.pack()
+
+right_lab = ttk.Label(
+    right,
+    text="Right panel"
+)
+right_lab.pack()
+
+paned.pack()
+
+# -----  Events/Listeners  ------
+
+
+# Tkinter має дуже потужний bind().
+# Загальний синтаксис:
+
+# widget.bind(
+#     "<event>",
+#     callback
+# )
+
+# Callback:
+# def callback(event):
+#     print(event)
+
+
+# Найпотрібніші events
+# Mouse
+# "<Button-1>"       # ліва кнопка
+# "<Button-2>"       # середня
+# "<Button-3>"       # права
+
+# "<Double-1>"       # double click
+
+# "<ButtonPress>"
+# "<ButtonRelease>"
+
+# "<Motion>"         # рух миші
+# "<Enter>"          # mouse entered widget
+# "<Leave>"          # mouse left widget
+
+
+# Keyboard
+# "<Key>"
+# "<Return>"
+# "<Escape>"
+# "<Delete>"
+# "<BackSpace>"
+# "<Tab>"
+# "<space>"
+
+# Комбінації клавіш
+# root.bind(
+#     "<Control-s>",
+#     save_file
+# )
+
+# Windows/Linux:  "<Control-s>"
+# Mac: "<Command-s>"
+
+# "<Control-Shift-s>"
+
+
+# -----  Event object  -----
+# У callback доступні координати та інформація про подію:
+
+
+# def on_click(event):
+#     print(event.x)
+#     print(event.y)
+#     print(event.widget)
+
+# Корисні поля:
+
+# event.x
+# event.y
+# event.x_root
+# event.y_root
+# event.widget
+# event.keysym
+# event.keycode
+# event.char
+# event.state
+
+
+# ------  Command vs bind  ------
+
+
+# Це важлива різниця.
+# command Застосовується до семантичної дії віджета:
+
+# ttk.Button(
+#     frame,
+#     text="Save",
+#     command=save  # Uses the Callback without event
+# )
+
+# bind Для конкретної GUI-події:
+
+# button.bind(
+#     "<Double-1>",
+#     on_double_click
+# )
+
+# Запам'ятати
+# command → дія віджета
+# bind    → GUI event
+
+
+#  -----  Відв'язування listener  ------
+
+
+# widget.unbind(
+#     "<Button-1>"
+# )
+
+# Але якщо потрібно видалити конкретний callback, краще зберігати ID:
+#  Кожна прив'язка  створює і повертає bind_id, тобто не ід віджета і не ід коллбека
+#  А саме ід прив'язки коллбека до віджета, його можна зберігти в окремій змінній і 
+# використовувати для відв'язування 
+
+# Уявімо, що ми прив'язали два callback до однієї події:
+# # Параметр add="+" означає, що коллбек буде додаватись, а не замінюватиме існуючий
+
+# id1 = widget.bind("<Button-1>", callback1, add="+") 
+# id2 = widget.bind("<Button-1>", callback2, add="+")
+
+# При натисканні кнопки виконаються два коллбеки
+
+# widget.unbind("<Button-1>", id1) # Після цієї відв'язки виконуватиметься лише коллбек id2
+
+
+#  -----  bind_all  -----
+
+
+# Навішує ліснер на всі віджети програми - дуже корисний для глобальних горячих клавіш
+
+# root.bind_all(
+#     "<Control-s>",
+#     save_file
+# )
+
+# Скасувати прив1язку з усіх віджетів
+# root.unbind_all("<Control-s>")
+
+# При цьому якщо потрібно відв'язати подію лише від одного віджету,
+# а для інших залишити, то треба внутри коллбеку перевіряти джерело події
+# і виходити з коллбека якщо event.widget == (наприклад entry2), це не відмінить сам коллбек
+# але змусить його вийти без виконання.
+
+
+#   ------  Рівні біндінгу  ------
+
+
+# Tkinter має кілька рівнів binding:
+
+# widget.bind(...) - прив'язка до конкретного об'єкту (віджету)
+# widget.bind_class(...) - прив'язка до усіх об'єктів класу
+# root.bind_all(...) - прив'язка на весь додаток
+# root.bind(...)  - прив'язка на сам рут
+
+# Спрощено можна думати так:
+# bind()
+#     ↓
+# конкретний Widget
+
+# bind_class()
+#     ↓
+# всі Widget певного класу
+
+# bind_all()
+#     ↓
+# всі Widget програми
+
+# bind()
+# на root
+#     ↓
+# події самого root / його event processing
+
+
+
+#  -----  Відключення/включення віджета  ------
+
+
+# | TTK-віджет        | Вимкнути                             | Увімкнути                          | Що відбувається                                                 |
+# | ----------------- | ------------------------------------ | ---------------------------------- | --------------------------------------------------------------- |
+# | `ttk.Button`      | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Не можна натиснути                                              |
+# | `ttk.Checkbutton` | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Не можна змінити стан                                           |
+# | `ttk.Radiobutton` | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Не можна вибрати                                                |
+# | `ttk.Entry`       | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Забороняє введення/редагування                                  |
+# | `ttk.Combobox`    | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Не можна взаємодіяти з `Combobox`                               |
+# | `ttk.Spinbox`     | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Забороняє зміну значення                                        |
+# | `ttk.Scale`       | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Повзунок не можна рухати                                        |
+# | `ttk.Scrollbar`   | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Прокручування через scrollbar недоступне                        |
+# | `ttk.Progressbar` | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Віджет переходить у disabled state                              |
+# | `ttk.Treeview`    | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Відключає взаємодію користувача                                 |
+# | `ttk.Notebook`    | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Відключає Notebook                                              |
+# | `ttk.Separator`   | `widget.configure(state="disabled")` | `widget.configure(state="normal")` | Технічно state підтримується, але практичного сенсу майже немає |
+# | `ttk.Label`       | —                                    | —                                  | Не має `state` для такого керування                             |
+# | `ttk.Frame`       | —                                    | —                                  | Не має `state`                                                  |
+# | `ttk.Labelframe`  | —                                    | —                                  | Не має `state`                                                  |
+# | `ttk.Panedwindow` | —                                    | —                                  | Не має стандартного `disabled` state для всього віджета         |
+
+# Але є особливо важливі винятки.
+# ttk.Combobox  - У нього є ще третій цікавий стан:
+# combobox.configure(state="readonly")  - Тоді користувач не може вводити текст вручну, але може вибирати значення зі списку.
+
+
+# Окрім widget.configure(state = "disabled"), можна використовувати метод state()
+# widget.state(["disabled"]) - встановить стейт віджету disabled
+# widget.state(["!disabled"]) - відмінить стейт віджету disabled
+
+# disabled не поширюється автоматично на дочірні віджети. Потрібно рекурсивно проходити усіх дітей і встановлювати статус
+  
+
+#  -----  Налаштування будь якого параметру  -----
+
+
+# Майже будь який параметр в ткінтері можна налаштувати і отримати через
+
+# widget.configure(param_name="param_value") # де param_name, param_value назва і значення конкретного параметру
+# value = widget.cget("param_name")
+
+#  ------  Focus  -----
+
+# Встановити фокус на віджеті
+# widget.focus_set()
+
+# Перевірити стан фокусу 
+# status = widget.status_get()
+
+
+
+#  ------  Валідація Entry  ------
+
+
+# Наприклад, дозволити тільки цифри.
+
+# def validate(value):
+#     return value.isdigit() or value == ""
+
+# vcmd = (
+#     root.register(validate),
+#     "%P"
+# )
+
+# entry = ttk.Entry(
+#     root,
+#     validate="key",
+#     validatecommand=vcmd
+# )
+
+# %P — нове значення поля.
+
+# Інші корисні substitution codes:
+
+# %d — type of action
+# %i — index
+# %P — proposed value
+# %s — current value
+# %S — inserted/deleted text
+# %v — current validate setting
+# %V — trigger
+# %W — widget
+
+
+#  ------  Вікна Toplevel  ------
+
+
+# Додаткове вікно:
+# window = tk.Toplevel(root)
+# window.title("Modal dialog")
+# window.geometry("400x300")
+# window.configure(relief="raised")
+
+# Закрити:
+# window.destroy()
+
+# Зробити модальним:
+# window.transient(root)
+# window.grab_set()
+# root.wait_window(window)
+
+# Це приблизний аналог dialog window.
+
+
+#  ------  Дії при закритті вікна  ------
+
+
+def on_close():
+    if messagebox.askyesno("Exit", "Do you want to exit?"):
+        root.destroy()  # Remove this sting to deny window close
+
+root.protocol("WM_DELETE_WINDOW", on_close)
+
+# Тут protocol() фактично стає перехоплювачем системної команди закриття, 
+# а вже функція on_close() вирішує, що робити.
+# Дуже корисно для:
+# підтвердження виходу;
+# збереження даних;
+# cleanup;
+# завершення background tasks.
+
+
+#  -----  Використання таймеру оновлення вікна  -----
+
+
+# Для цього використовується метод after()
+# def update():
+#     print("tick")
+#     root.after(1000, update)
+
+# root.after(1000, update)  #Рекурсивно викликатиме функцію оновлення GUI через 1000 мс
+
+# import threading
+
+# def worker():
+#     result = load_data()
+
+#     root.after(
+#         0,
+#         lambda: update_gui(result)
+#     )
+
+# threading.Thread(
+#     target=worker,
+#     daemon=True
+# ).start()
+
+# Tkinter widgets не варто змінювати з worker thread. 
+# Оновлення GUI роби через головний потік, наприклад after().
 
 
 root.mainloop() #This launch the UI window
